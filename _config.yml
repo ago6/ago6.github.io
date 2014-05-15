@@ -2,12 +2,12 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://AdrianArtiles.com
-title: Adrian Artiles
-subtitle: My spot on the interwebs
-author: Adrian Artiles
+url: http://ago6.github.io
+title: Ale
+subtitle: Da interwebs
+author: Ale G
 simple_search: http://google.com/search
-description: Work and writings by Adrian on tech, life, and business
+description: Work and writings by Ale on tech, life, and business
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
 # You can customize the format as defined in
@@ -19,7 +19,7 @@ date_format: "ordinal"
 subscribe_rss: /atom.xml
 subscribe_email:
 # RSS feeds can list your email address if you like
-email: adrian.r.artiles@gmail.com
+email: ago@gmail.com
 
 # ----------------------- #
 #    Jekyll & Plugins     #
