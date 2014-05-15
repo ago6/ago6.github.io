@@ -1,0 +1,501 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>The Making of GitRep.com - Adrian Artiles</title>
+  <meta name="author" content="Adrian Artiles">
+
+  
+  <meta name="description" content="The Making of GitRep.com written February 3, 2013 in tech For the longest time I had an annoying problem; I found it difficult to find and compare &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://AdrianArtiles.com/the-making-of-gitrep-dot-com">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Adrian Artiles" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-34692646-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+  <body>
+    <a href="/" class="home-icon">
+      <img src="/images/home.png"/>
+    </a>
+
+    <article role="article" class="full-single-article">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+        <h1>The Making of GitRep.com</h1>
+        <div class="meta">
+          written 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-02-03T14:40:00-08:00" pubdate data-updated="true">February 3, 2013</time> in 
+          
+
+<span class="categories">
+  
+    <a class='category' href='/categories/tech/'>tech</a>
+  
+</span>
+
+
+        </div>
+        <p>For the longest time I had an annoying problem; I found it difficult to find and compare open source software. What&rsquo;s the best jQuery library for x, or a more updated version of gem y?</p>
+
+<p>After discovering I was not alone in this torture, I spent a few weeks building and launching <a href="http://GitRep.com">GitRep</a>. Read on to learn a little about some decisions, both technical and business, made in its making and its launch.</p>
+
+<!--more-->
+
+
+<h2>The Need</h2>
+
+<p>With Ruby it&rsquo;s less difficult to find popular gems thanks to the makeup of the community and existing tools, however I found this type of discovery to be more difficult when it came to other languages. And still in Ruby, I wasn&rsquo;t able to explore and compare various solutions as easily as I would have liked.</p>
+
+<p>I didn&rsquo;t think much about the problem, thinking that as I become more ingrained with open source software I will become more knowledgeable of the tools available. But as time went on, I would notice in tweets, posts, and questions complaints that were similar to mine. This lead me to realize that maybe I wasn&rsquo;t the only one sparring with this issue, and maybe &ldquo;waiting to travel the road to know what is around&rdquo; isn&rsquo;t the best way to become aware of your options. Maybe this should be addressed, it seems a solution could be of value to people other than just myself.</p>
+
+<h2>Back of the Napkin Design</h2>
+
+<p>So I began thinking of what a first stab at a solution for this would look like. One approach I&rsquo;ve seen is to place gems/libraries/plugins/packages/etc. (referred to simply as &ldquo;repos&rdquo; going forward) into categories. The issue I had with the approach of categorizing repos is that it would be almost impossible for me to sit down and think of all the appropriate categories that repos could fall into. As I wanted the site to be as community-driven as possible, and that community-driven tagging seemed to fit the bill of being flexible, I felt that that was a good place to start.</p>
+
+<p>Another feature I thought would be helpful would be the ability to see repos that are similar to any given repo. That way one could easily compare and discover different options. There were two &ldquo;repo discovery&rdquo; methods I wanted to implement; repos similar according to their tags and descriptions, and &ldquo;users who starred this repo also starred these other repos&rdquo; type associations. I felt that these two methods were a good way to discover other relevant repos. Currently only the former is implemented, the latter should be implemented in the next few weeks.</p>
+
+<p>It goes without saying that it must have good searching functionality. I want to be able to search by tags and text descriptions, and be able to easily compare results by how popular they are (star count), and how active development is (created date, updated date, fork count).</p>
+
+<p>Another consideration is that it must be low-friction and easy to use. One click sign-in with your existing GitHub account, one click to tag items, tag suggestions, clicking on tags to see other items with the same tag, etc.. Get the site out of the user&rsquo;s way as much as possible.</p>
+
+<p>I thought that this was a good design to start with. I didn&rsquo;t want to make a huge monolithic app in isolation with every single feature imaginable. Since I am one of the billions of people who read Lean Startup, I knew it was important to build a rough idea and get it in the hands of the community and see if and where they find value and iterate accordingly.</p>
+
+<h2>Building, and the Technology</h2>
+
+<p>Now that I had an idea of what I wanted to build, I needed to decide how I was going to build it. Most of my stack was going to be pretty conventional <a href="http://words.steveklabnik.com/rails-has-two-default-stacks">Rails &ldquo;Prime&rdquo; Stack</a>; Ruby on Rails with haml to cut down on typing, Unicorn for its performance (and letting me squeeze the most out of each Heroku dyno), Postgresql for it&rsquo;s maturity, Heroku for it&rsquo;s ease of use.</p>
+
+<p>For monitoring, New Relic was a pretty easy choice, especially on Heroku where it is popular. Installation is easy, and it gives me insight to memory usage, slow queries, downtime, etc.. It&rsquo;s an easy win, and can&rsquo;t yet think of a reason one wouldn&rsquo;t use it.</p>
+
+<p>Twitter Bootstrap was another easy and common choice. In <a href="http://GitRep.com">GitRep.com</a>&rsquo;s case, it is used manually for scaffolding, inputs, and javascript stuff. jQuery was another obvious front end choice.</p>
+
+<p>For signing in with your GitHub account, I turned to Devise with omniauth-github. As I didn&rsquo;t want just anyone or any GitHub user altering public tags, I needed user authorization. For this I turned to CanCan and Rolify. After implementing CanCan, I now have the following <code>ability.rb</code> file under <code>models</code> that allows only GitHub users older than a month to update the public tags of a repo.</p>
+
+<figure class='code'><figcaption><span>ability.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">Ability</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="ss">CanCan</span><span class="p">:</span><span class="ss">:Ability</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">user</span> <span class="o">||=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">can</span> <span class="ss">:read_public_tags</span><span class="p">,</span> <span class="no">Repo</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">can</span> <span class="ss">:manage</span><span class="p">,</span> <span class="no">User</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># if they are a github authorized user and have been for a month, they can edit public tags</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">github_oauth_token</span> <span class="o">&amp;&amp;</span> <span class="n">user</span><span class="o">.</span><span class="n">github_created_at</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="o">.</span><span class="n">month</span><span class="o">.</span><span class="n">ago</span>
+</span><span class='line'>      <span class="n">can</span> <span class="ss">:update_public_tags</span><span class="p">,</span> <span class="no">Repo</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then check the user&rsquo;s abilities in the view and controller. With an example of checking in the controller something like&hellip;</p>
+
+<figure class='code'><figcaption><span>tags_controller.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">TagsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">update_tag_list</span>
+</span><span class='line'>    <span class="vi">@repo</span> <span class="o">=</span> <span class="no">Repo</span><span class="o">.</span><span class="n">find</span> <span class="n">params</span><span class="o">[</span><span class="ss">:repo_id</span><span class="o">]</span>
+</span><span class='line'>    <span class="vi">@user</span> <span class="o">=</span> <span class="n">current_user</span>
+</span><span class='line'>    <span class="n">authorize!</span> <span class="ss">:update_public_tags</span><span class="p">,</span> <span class="vi">@repo</span> <span class="c1"># Makes sure the user can do this action on this Repo</span>
+</span><span class='line'>    <span class="vi">@tag_names</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:name</span><span class="o">].</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="no">Tag</span><span class="o">.</span><span class="n">update_tag_list</span><span class="p">({</span>
+</span><span class='line'>      <span class="ss">repo</span><span class="p">:</span> <span class="vi">@repo</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">user</span><span class="p">:</span> <span class="vi">@user</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">type</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:type</span><span class="o">]</span>
+</span><span class='line'>    <span class="p">},</span> <span class="vi">@tag_names</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="vi">@repo</span><span class="o">.</span><span class="n">tags_public</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Authorizing various actions of objects and classes for different types of users is pretty much that simple!</p>
+
+<p>Throughout your codebase, and sometimes unique to some environments, there are values that make sense to centralize in a settings file instead of throughout the code. To address this I use a gem called <a href="http://github.com/somelink">settingslogic</a>. I just define a yaml file, and address it throughout the codebase, for example;</p>
+
+<figure class='code'><figcaption><span>application.yml </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">defaults</span><span class="p-Indicator">:</span> <span class="nl">&amp;defaults</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">app_name</span><span class="p-Indicator">:</span> <span class="s">&#39;GitRep&#39;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">similar_tag_limit</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">7</span>
+</span><span class='line'><span class="l-Scalar-Plain">development</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">&lt;&lt;</span><span class="p-Indicator">:</span> <span class="nv">*defaults</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">host</span><span class="p-Indicator">:</span> <span class="s">&#39;localhost:5000&#39;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">analytics</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">google_property_id</span><span class="p-Indicator">:</span> <span class="s">&#39;UA-xxxxxxx-DEVELOPMENT&#39;</span>
+</span><span class='line'><span class="l-Scalar-Plain">production</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">&lt;&lt;</span><span class="p-Indicator">:</span> <span class="nv">*defaults</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">host</span><span class="p-Indicator">:</span> <span class="s">&#39;gitrep.com&#39;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">analytics</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">google_property_id</span><span class="p-Indicator">:</span> <span class="s">&#39;UA-31403396-2&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>app_settings.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">AppSettings</span> <span class="o">&lt;</span> <span class="no">Settingslogic</span>
+</span><span class='line'>  <span class="n">source</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="s2">/config/application.yml&quot;</span>
+</span><span class='line'>  <span class="n">namespace</span> <span class="no">Rails</span><span class="o">.</span><span class="n">env</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>example.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="no">AppSettings</span><span class="o">.</span><span class="n">analytics</span><span class="o">.</span><span class="n">google_property_id</span> <span class="c1"># this is equal to &#39;UA-31403396-2&#39; in production</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This makes settings things like project name and other settings easy. I would also recommend looking into <a href="https://github.com/laserlemon/figaro">Figaro</a> for handling sensitive things such as API keys and other things you&rsquo;d want to keep in an environment variable (and out of the codebase and version control) in a similar manner as settingslogic.</p>
+
+<p>Several features, such as adding and updating a user&rsquo;s starred repos, are done asynchronously. For asynchronous jobs I turned to sidekiq. I find it more performant than Resque, with a simple to use API that is still powerful and feature rich. For example when a user signs in I use the following user_login service;</p>
+
+<figure class='code'><figcaption><span>user_login.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">UserLogin</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">auth</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@auth</span> <span class="o">=</span> <span class="n">auth</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">login</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kp">false</span> <span class="k">unless</span> <span class="vi">@auth</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">from_github_omniauth</span><span class="p">(</span><span class="vi">@auth</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>      <span class="no">UpdateUserStarredRepos</span><span class="o">.</span><span class="n">perform_async</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">user</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="kp">false</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>which then executes</p>
+
+<figure class='code'><figcaption><span>update_user_starred_repos.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">UpdateUserStarredRepos</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="ss">Sidekiq</span><span class="p">:</span><span class="ss">:Worker</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">starred_repos</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">github_starred_repos</span>
+</span><span class='line'>    <span class="no">Star</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">stargazer_login</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">login</span><span class="p">)</span><span class="o">.</span><span class="n">delete_all</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">starred_repos</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">raw_repo</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">repo</span> <span class="o">=</span> <span class="no">Repo</span><span class="o">.</span><span class="n">from_github</span><span class="p">(</span><span class="n">raw_repo</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">repo</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>      <span class="no">Star</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">admired_id</span><span class="p">:</span> <span class="n">repo</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">stargazer_login</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">login</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And boom, an asynchronous job is created.</p>
+
+<p>Also since I am bootstrapping this, I aimed to fit the entire application, including background jobs, into a single Heroku dyno. In my case with unicorn and sidekiq, I achieved this by starting sidekiq once with the following config file for unicorn;</p>
+
+<figure class='code'><figcaption><span>unicorn.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">worker_processes</span> <span class="mi">2</span>
+</span><span class='line'><span class="n">timeout</span> <span class="mi">30</span>
+</span><span class='line'><span class="n">preload_app</span> <span class="kp">true</span>
+</span><span class='line'>
+</span><span class='line'><span class="vi">@sidekiq_pid</span> <span class="o">=</span> <span class="kp">nil</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">before_fork</span> <span class="k">do</span> <span class="o">|</span><span class="n">server</span><span class="p">,</span> <span class="n">worker</span><span class="o">|</span>
+</span><span class='line'>  <span class="vi">@sidekiq_pid</span> <span class="o">||=</span> <span class="n">spawn</span><span class="p">(</span><span class="s2">&quot;bundle exec sidekiq -C ./config/sidekiq.yml&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">after_fork</span> <span class="k">do</span> <span class="o">|</span><span class="n">server</span><span class="p">,</span> <span class="n">worker</span><span class="o">|</span>
+</span><span class='line'>  <span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Base</span><span class="o">.</span><span class="n">establish_connection</span>
+</span><span class='line'>  <span class="no">Sidekiq</span><span class="o">.</span><span class="n">configure_server</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">redis</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>      <span class="ss">url</span><span class="p">:</span> <span class="no">AppSettings</span><span class="o">.</span><span class="n">data_store</span><span class="o">.</span><span class="n">redis</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">namespace</span><span class="p">:</span> <span class="s1">&#39;sidekiq&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">size</span><span class="p">:</span> <span class="mi">7</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So far, this unicorn setup has been humming along.</p>
+
+<p>I use caching liberally throughout the app, both in the form of view fragment caching, and good old (and awesome) <a href="http://api.rubyonrails.org/classes/ActiveSupport/Cache/Store.html#method-i-fetch">Rails.cache.fetch</a>. For this I use memcache with the dalli gem. This is the first project where I made good use of Rails.cache.fetch, and I am a huge fan. An example from the codebase below (Ignore the Feature Envy for now, it is a candidate for refactoring);</p>
+
+<figure class='code'><figcaption><span>tag.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">Tag</span>
+</span><span class='line'>  <span class="c1"># ....</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">public_tags</span><span class="p">(</span><span class="n">options</span> <span class="o">=</span> <span class="p">{})</span>
+</span><span class='line'>    <span class="n">tags</span> <span class="o">=</span> <span class="k">if</span> <span class="n">options</span><span class="o">[</span><span class="ss">:cache</span><span class="o">]</span> <span class="o">==</span> <span class="kp">false</span>
+</span><span class='line'>      <span class="no">Repo</span><span class="o">.</span><span class="n">tag_counts_on</span><span class="p">(</span><span class="ss">:public_tags</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="no">Rails</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="o">[</span><span class="s1">&#39;Tag&#39;</span><span class="p">,</span> <span class="s1">&#39;public_tags&#39;</span><span class="o">]</span><span class="p">,</span> <span class="n">expires_in</span><span class="p">:</span> <span class="mi">10</span><span class="o">.</span><span class="n">minutes</span><span class="p">)</span> <span class="p">{</span> <span class="no">Repo</span><span class="o">.</span><span class="n">tag_counts_on</span><span class="p">(</span><span class="ss">:public_tags</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="n">options</span><span class="o">[</span><span class="ss">:tag_class</span><span class="o">]</span> <span class="p">?</span> <span class="n">tags</span> <span class="p">:</span> <span class="n">tags</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span> <span class="n">t</span><span class="o">.</span><span class="n">name</span> <span class="p">}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And something just as awesome, <a href="http://37signals.com/svn/posts/3113-how-key-based-cache-expiration-works">key-based fragment caching</a>!;</p>
+
+<figure class='code'><figcaption><span>_widget_profile_info.html.haml </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="p">-</span> <span class="n">cache</span> <span class="o">[</span><span class="s1">&#39;v1&#39;</span><span class="p">,</span> <span class="s1">&#39;users/_widget_profile_info&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">]</span> <span class="k">do</span>
+</span><span class='line'>  <span class="nt">%p</span>
+</span><span class='line'>    Here is some cool stuff on this user that is cached until the user is updated!
+</span><span class='line'>  <span class="p">=</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">image_tag</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">gravatar_url</span><span class="p">(</span><span class="ss">:s</span> <span class="o">=&gt;</span> <span class="mi">300</span><span class="p">),</span> <span class="ss">:alt</span> <span class="o">=&gt;</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using these techniques has kept load time lower, but I still have a ways to go to optimize performance.</p>
+
+<p>For testing I use rspec, machinist (may switch back to FactoryGirl), and <a href="https://github.com/vcr/vcr">vcr</a> for stubbing web requests. If you use external APIs or web resources at all I would definitely recommend taking a look at <a href="https://github.com/vcr/vcr">vcr</a>, it makes mocking external requests a breeze.</p>
+
+<p>Finally for search I am using <a href="http://www.elasticsearch.org/">Elastic Search</a> with the <a href="https://github.com/karmi/tire">tire gem</a>. My initial approach was to load up into Elastic Search the IDs of each repo, and each repo&rsquo;s updated date, created date, and tags. I would then do a search against Elastic Search on those items and be returned IDs that I would use to pull the actual objects from the database and present to the user with the additional information that having the object provides. Then I happened upon a better idea; Why don&rsquo;t I put everything I&rsquo;m interested in into Elastic Search (and keep it updated) so I don&rsquo;t have to go back to my database to get that information? Now, I place the ID, repo name and owner name, description, star count, fork count, created date, updated date, and tags into Elastic Search. When a user does a search, all of those items are returned from Elastic Search, which is everything I need to display to the user. No need to bug the database for additional information! Unless the search contains personal tags from a logged in user (since I don&rsquo;t store private tag information in Elastic Search), which is a very small percentage of searches, the database is not hit at all! This was a huge boost to performance and memory usage.</p>
+
+<p>Also, using Elastic Search&rsquo;s filter and boolean features, finding similar repos based on the tags and descriptions is a snap.</p>
+
+<p>During development, <a href="http://pryrepl.org/">Pry</a> was a big asset. If you have never heard of Pry, I&rsquo;d recommend checking it out as it is a powerful alternative to the standard IRB shell for Ruby.</p>
+
+<h2>Launch</h2>
+
+<p>After I had the initial feature set completed and launched, it was time to get it in the hands of actual users to see if this solves the problem I set out to address and how to move forward. I was excited to get people using the app that I spent several weeks building in the hopes that it&rsquo;d be useful. I tweeted a bit, posted a discussion on LinkedIn, and made a small post on Reddit. In the first hour, I got a few dozen users. Awesome! People were using it! I was being asked questions! People liked it! The past few weeks weren&rsquo;t a complete waste of time!</p>
+
+<p>Then another hour or two passed, and several hundred people were using it. I was blown away. I was getting real traffic! I&rsquo;m not the only person who had this problem and thought my approach was useful! This was huge for me, my project actually had legs!</p>
+
+<p>Then thousands of people were using it. Now I was getting nervous; I felt like I wasn&rsquo;t ready for this kind of attention yet. My plan was to get some people using it, see what their thoughts and input were, and improve accordingly. Once I was able to address the input from other devs and launch a &ldquo;v1.2&rdquo;, I&rsquo;d then throw everything I had at getting it in the hands of devs. Clearly that plan went up in smoke and they were coming <em>now</em>.</p>
+
+<p>There were more conversations springing up and I knew it was important to get involved. I wanted to explain what I was trying to achieve, address the critics, and solicit input, and now was the best time, possibly the only time, to do this. I started engaging as many people and points as possible. At the same time, a bottleneck or two that I missed became apparent as I was dealing with hundreds of requests per minute and adding tens of thousands of repos. User experience was paramount. If the site started to respond poorly, crash, throw errors, or do anything other than perform with flying colors, I&rsquo;d be stifling possibly my largest opportunity to get real traction. While I was engaging as many conversations as humanly possible, I was also trying to elegantly and quickly address any issues that arose. It was a frantic day to say the least.</p>
+
+<h4>On <a href="http://gitrep.com">GitRep</a>&rsquo;s first full day live, 1,493 user accounts, 72,503 repos, and 409 unique tags were created.</h4>
+
+<p>I honestly could not have hoped for a better first day!</p>
+
+<h2>Post-Launch</h2>
+
+<p>Now that it is finally out the door, I am going to continue to watch how people use the site (using analytics such as Google Analytics and Mixpanel) and listen to direct feedback from UserVoice. Between the two I should get a good idea of where people are finding value and how to iterate and improve accordingly.</p>
+
+<p>So far next steps include adding badges to help incentivize the user base and adding a blog to cover updates and posts of interest. I also want to invest in getting the word out. The more people using it, the more opportunity to make <a href="http://GitRep.com">GitRep</a> useful!</p>
+
+<p>Thanks for taking the time to read through all this! It turned out a little longer than I had expected. As always, I&rsquo;m eager for any input or hearing from anyone wanting to get involved. I&rsquo;m always available at adrian.r.artiles at gmail dot com!</p>
+
+      </div>
+    </div>
+  </div>
+</article>
+
+<hr class="divider-short"/>
+
+<div class="archive-link">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+        
+          <a class="pull-left" href="/standing-on-the-shoulders-of-giants" title="Previous Post: Standing on the Shoulders of Giants">&laquo; Previous: Standing on the Shoulders of Giants</a>
+        
+
+        
+          <a class="pull-right" href="/write-like-you-mean-it" title="Next Post: Write Like You Mean It">Next: Write Like You Mean It &raquo;</a>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+    <footer id="footer" class="her-row">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-1">
+  <a href="/"><h4>Home</h4></a>
+</div>
+
+<div class="col-md-2">
+  <div class="social-icon-list">
+    <a href="https://twitter.com/AdrianArtiles"><img src="/images/glyphicons_social_31_twitter.png"/></a>
+    <a href="https://github.com/sevenadrian"><img src="/images/glyphicons_social_21_github.png"/></a>
+    <a href="mailto:adrian.r.artiles@gmail.com"><img src="/images/glyphicons_social_39_e-mail.png"/></a>
+  </div>
+</div>
+
+<div class="pull-right">
+  <h4>Powered by <a href="http://octopress.org/">Octopress</a>. Designed by <a href="http://AdrianArtiles.com">Adrian Artiles</a>.</h4>
+</div>
+
+
+    </div>
+  </div>
+</footer>
+
+  </body>
+</html>

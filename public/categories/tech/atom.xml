@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Tech | Adrian Artiles]]></title>
+  <link href="http://AdrianArtiles.com/categories/tech/atom.xml" rel="self"/>
+  <link href="http://AdrianArtiles.com/"/>
+  <updated>2014-03-01T19:44:54-08:00</updated>
+  <id>http://AdrianArtiles.com/</id>
+  <author>
+    <name><![CDATA[Adrian Artiles]]></name>
+    <email><![CDATA[adrian.r.artiles@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Local Webhook Testing and Exposing Localhost to the Internet With Ngrok]]></title>
+    <link href="http://AdrianArtiles.com/webhook-testing-and-exposing-localhost-to-the-internet-with-ngrok"/>
+    <updated>2013-12-30T21:49:00-08:00</updated>
+    <id>http://AdrianArtiles.com/webhook-testing-and-exposing-localhost-to-the-internet-with-ngrok</id>
+    <content type="html"><![CDATA[<p>Recently I was working on incorporating some <a href="http://Stripe.com">Stripe</a> webhooks, but quite naturally I wanted to test it and iterate locally. Having to write some code, commit, merge it to master, deploy to production, and then finally test, is just way too long of a feedback loop.</p>
+
+<p>I wanted to be able to expose my localhost to the internet so I can test the webhooks locally, and I found the perfect tool in <a href="https://ngrok.com">ngrok</a>!</p>
+
+<!-- more -->
+
+
+<p>Ngrok is a simple application written in Go. You run it locally and it creates a tunnel to <a href="https://some-random-subdomain.ngrok.com.">https://some-random-subdomain.ngrok.com.</a> The application is a single binary with absolutely no run-time dependencies. It is hilariously easy to set up. In fact, we&rsquo;re going to set it up for you right now (these are mac instructions);</p>
+
+<pre><code># Download ngrok
+$ curl 'https://dl.ngrok.com/darwin_amd64/ngrok.zip' &gt; ~/Downloads/ngrok.zip
+
+# Unzip it
+$ unzip ~/Downloads/ngrok.zip
+
+# Create a tunnel from localhost:3000 to the interwebs
+$ ./ngrok 3000
+</code></pre>
+
+<p>That took 6, maybe 7 seconds to do, and our locally running server is now being served up to the web and is publicly accessible. Amazing.</p>
+
+<p>While running it, you&rsquo;ll see a status screen like the following.</p>
+
+<pre><code>ngrok                                                           (Ctrl+C to quit)
+
+Tunnel Status                 online
+Version                       1.6/1.5
+Forwarding                    http://kl23j.ngrok.com -&gt; 127.0.0.1:3000
+Forwarding                    https://kl23j.ngrok.com -&gt; 127.0.0.1:3000
+Web Interface                 127.0.0.1:4040
+# Conn                        0
+Avg Conn Time                 0.00ms
+</code></pre>
+
+<p>Now if your sole goal was to get your local server exposed to the web so it can be hit with webhooks from external services, just specify your ngrok url as the endpoint with your webhooking service and you&rsquo;re done. Also, on this screen you&rsquo;ll see a live list of incoming HTTP requests. Pretty snazzy.</p>
+
+<p>The snazziness does not end there however. Something that you may notice in this status screen is that you get a web interface at 127.0.0.1:4040. What&rsquo;s there you may ask? Well hopefully at this point you&rsquo;re running this locally so you can check it out first-hand, but in short it gives you a wealth of information including all requests, response time, the actual responses provided, and <em>the ability to replay requests</em>. Where do the surprises end?</p>
+
+<p>Oh, but what if you don&rsquo;t want a randomly assigned subdomain each time? Want to be able to specify a specific url/subdomain so your external services can always go to the same spot instead of always changing it to whatever randomly assigned subdomain ngrok gives you? Do you have another 15 to 20 seconds to invest in this fantastic little tool? Read on friend;</p>
+
+<p>If you register with ngrok.com <a href="https://ngrok.com/signup">here</a>, which is <em>completely free</em>, you get some additional functionality such as being able to specify specific subdomains (like <code>ngrok -subdomain=adrian-likes-waffles 3000</code> will create a tunnel from <a href="https://adrian-likes-waffles.ngrok.com,">https://adrian-likes-waffles.ngrok.com,</a> assuming it is currently available.), TCP tunneling, password protection, etc.. If you do decide you are willing to pay, there are even further features as well.</p>
+
+<p>Pretty great tool/service in such a tight package. Within a few minutes of playing with it I moved the binary to <code>/usr/local/bin/ngrok</code> so I always have access to it, making it a part of my regular tool belt. I hope you find it just as useful and it makes its way to your toolbelt as well.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[The Making of GitRep.com]]></title>
+    <link href="http://AdrianArtiles.com/the-making-of-gitrep-dot-com"/>
+    <updated>2013-02-03T14:40:00-08:00</updated>
+    <id>http://AdrianArtiles.com/the-making-of-gitrep-dot-com</id>
+    <content type="html"><![CDATA[<p>For the longest time I had an annoying problem; I found it difficult to find and compare open source software. What&rsquo;s the best jQuery library for x, or a more updated version of gem y?</p>
+
+<p>After discovering I was not alone in this torture, I spent a few weeks building and launching <a href="http://GitRep.com">GitRep</a>. Read on to learn a little about some decisions, both technical and business, made in its making and its launch.</p>
+
+<!--more-->
+
+
+<h2>The Need</h2>
+
+<p>With Ruby it&rsquo;s less difficult to find popular gems thanks to the makeup of the community and existing tools, however I found this type of discovery to be more difficult when it came to other languages. And still in Ruby, I wasn&rsquo;t able to explore and compare various solutions as easily as I would have liked.</p>
+
+<p>I didn&rsquo;t think much about the problem, thinking that as I become more ingrained with open source software I will become more knowledgeable of the tools available. But as time went on, I would notice in tweets, posts, and questions complaints that were similar to mine. This lead me to realize that maybe I wasn&rsquo;t the only one sparring with this issue, and maybe &ldquo;waiting to travel the road to know what is around&rdquo; isn&rsquo;t the best way to become aware of your options. Maybe this should be addressed, it seems a solution could be of value to people other than just myself.</p>
+
+<h2>Back of the Napkin Design</h2>
+
+<p>So I began thinking of what a first stab at a solution for this would look like. One approach I&rsquo;ve seen is to place gems/libraries/plugins/packages/etc. (referred to simply as &ldquo;repos&rdquo; going forward) into categories. The issue I had with the approach of categorizing repos is that it would be almost impossible for me to sit down and think of all the appropriate categories that repos could fall into. As I wanted the site to be as community-driven as possible, and that community-driven tagging seemed to fit the bill of being flexible, I felt that that was a good place to start.</p>
+
+<p>Another feature I thought would be helpful would be the ability to see repos that are similar to any given repo. That way one could easily compare and discover different options. There were two &ldquo;repo discovery&rdquo; methods I wanted to implement; repos similar according to their tags and descriptions, and &ldquo;users who starred this repo also starred these other repos&rdquo; type associations. I felt that these two methods were a good way to discover other relevant repos. Currently only the former is implemented, the latter should be implemented in the next few weeks.</p>
+
+<p>It goes without saying that it must have good searching functionality. I want to be able to search by tags and text descriptions, and be able to easily compare results by how popular they are (star count), and how active development is (created date, updated date, fork count).</p>
+
+<p>Another consideration is that it must be low-friction and easy to use. One click sign-in with your existing GitHub account, one click to tag items, tag suggestions, clicking on tags to see other items with the same tag, etc.. Get the site out of the user&rsquo;s way as much as possible.</p>
+
+<p>I thought that this was a good design to start with. I didn&rsquo;t want to make a huge monolithic app in isolation with every single feature imaginable. Since I am one of the billions of people who read Lean Startup, I knew it was important to build a rough idea and get it in the hands of the community and see if and where they find value and iterate accordingly.</p>
+
+<h2>Building, and the Technology</h2>
+
+<p>Now that I had an idea of what I wanted to build, I needed to decide how I was going to build it. Most of my stack was going to be pretty conventional <a href="http://words.steveklabnik.com/rails-has-two-default-stacks">Rails &ldquo;Prime&rdquo; Stack</a>; Ruby on Rails with haml to cut down on typing, Unicorn for its performance (and letting me squeeze the most out of each Heroku dyno), Postgresql for it&rsquo;s maturity, Heroku for it&rsquo;s ease of use.</p>
+
+<p>For monitoring, New Relic was a pretty easy choice, especially on Heroku where it is popular. Installation is easy, and it gives me insight to memory usage, slow queries, downtime, etc.. It&rsquo;s an easy win, and can&rsquo;t yet think of a reason one wouldn&rsquo;t use it.</p>
+
+<p>Twitter Bootstrap was another easy and common choice. In <a href="http://GitRep.com">GitRep.com</a>&rsquo;s case, it is used manually for scaffolding, inputs, and javascript stuff. jQuery was another obvious front end choice.</p>
+
+<p>For signing in with your GitHub account, I turned to Devise with omniauth-github. As I didn&rsquo;t want just anyone or any GitHub user altering public tags, I needed user authorization. For this I turned to CanCan and Rolify. After implementing CanCan, I now have the following <code>ability.rb</code> file under <code>models</code> that allows only GitHub users older than a month to update the public tags of a repo.
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>ability.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">Ability</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="ss">CanCan</span><span class="p">:</span><span class="ss">:Ability</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  def initialize(user)&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">user</span> <span class="o">||=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">can</span> <span class="ss">:read_public_tags</span><span class="p">,</span> <span class="no">Repo</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">can</span> <span class="ss">:manage</span><span class="p">,</span> <span class="no">User</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># if they are a github authorized user and have been for a month, they can edit public tags</span>
+</span><span class='line'><span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">github_oauth_token</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="n">user</span><span class="o">.</span><span class="n">github_created_at</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">=</span> <span class="mi">1</span><span class="o">.</span><span class="n">month</span><span class="o">.</span><span class="n">ago</span>
+</span><span class='line'>  <span class="n">can</span> <span class="ss">:update_public_tags</span><span class="p">,</span> <span class="no">Repo</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="o">&lt;</span><span class="sr">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>And then check the user&rsquo;s abilities in the view and controller. With an example of checking in the controller something like&hellip;</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>tags_controller.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">TagsController</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="no">ApplicationController</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  def update_tag_list&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="vi">@repo</span> <span class="o">=</span> <span class="no">Repo</span><span class="o">.</span><span class="n">find</span> <span class="n">params</span><span class="o">[</span><span class="ss">:repo_id</span><span class="o">]</span>
+</span><span class='line'><span class="vi">@user</span> <span class="o">=</span> <span class="n">current_user</span>
+</span><span class='line'><span class="n">authorize!</span> <span class="ss">:update_public_tags</span><span class="p">,</span> <span class="vi">@repo</span> <span class="c1"># Makes sure the user can do this action on this Repo</span>
+</span><span class='line'><span class="vi">@tag_names</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:name</span><span class="o">].</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="no">Tag</span><span class="o">.</span><span class="n">update_tag_list</span><span class="p">({</span>
+</span><span class='line'>  <span class="ss">repo</span><span class="p">:</span> <span class="vi">@repo</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">user</span><span class="p">:</span> <span class="vi">@user</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">type</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:type</span><span class="o">]</span>
+</span><span class='line'><span class="p">},</span> <span class="vi">@tag_names</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="vi">@repo</span><span class="o">.</span><span class="n">tags_public</span>
+</span><span class='line'><span class="o">&lt;</span><span class="sr">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Authorizing various actions of objects and classes for different types of users is pretty much that simple!</p>
+
+<p>Throughout your codebase, and sometimes unique to some environments, there are values that make sense to centralize in a settings file instead of throughout the code. To address this I use a gem called <a href="http://github.com/somelink">settingslogic</a>. I just define a yaml file, and address it throughout the codebase, for example;</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>application.yml </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">defaults</span><span class="p-Indicator">:</span> <span class="nl">&amp;amp</span><span class="l-Scalar-Plain">;defaults</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">app_name</span><span class="p-Indicator">:</span> <span class="nl">&amp;lsquo</span><span class="l-Scalar-Plain">;GitRep&amp;rsquo;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">similar_tag_limit</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">7</span>
+</span><span class='line'><span class="l-Scalar-Plain">development</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="nl">&amp;lt</span><span class="l-Scalar-Plain">;&amp;lt;</span><span class="p-Indicator">:</span> <span class="nv">*defaults</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">host</span><span class="p-Indicator">:</span> <span class="nl">&amp;lsquo</span><span class="l-Scalar-Plain">;localhost:5000&amp;rsquo;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">analytics:&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">&lt;pre&gt;&lt;code&gt;google_property_id</span><span class="p-Indicator">:</span> <span class="s">&#39;UA-xxxxxxx-DEVELOPMENT&#39;</span>
+</span><span class='line'><span class="l-Scalar-Plain">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">&lt;p&gt;production</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="nl">&amp;lt</span><span class="l-Scalar-Plain">;&amp;lt;</span><span class="p-Indicator">:</span> <span class="nv">*defaults</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">host</span><span class="p-Indicator">:</span> <span class="nl">&amp;lsquo</span><span class="l-Scalar-Plain">;gitrep.com&amp;rsquo;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">analytics:&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">&lt;pre&gt;&lt;code&gt;google_property_id</span><span class="p-Indicator">:</span> <span class="s">&#39;UA-31403396-2&#39;</span>
+</span><span class='line'><span class="l-Scalar-Plain">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>app_settings.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">AppSettings</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="no">Settingslogic</span>
+</span><span class='line'>  <span class="n">source</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="c1">#{Rails.root}/config/application.yml&amp;rdquo;</span>
+</span><span class='line'>  <span class="n">namespace</span> <span class="no">Rails</span><span class="o">.</span><span class="n">env</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>example.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="no">AppSettings</span><span class="o">.</span><span class="n">analytics</span><span class="o">.</span><span class="n">google_property_id</span> <span class="c1"># this is equal to &amp;lsquo;UA-31403396-2&amp;rsquo; in production</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>This makes settings things like project name and other settings easy. I would also recommend looking into <a href="https://github.com/laserlemon/figaro">Figaro</a> for handling sensitive things such as API keys and other things you&rsquo;d want to keep in an environment variable (and out of the codebase and version control) in a similar manner as settingslogic.</p>
+
+<p>Several features, such as adding and updating a user&rsquo;s starred repos, are done asynchronously. For asynchronous jobs I turned to sidekiq. I find it more performant than Resque, with a simple to use API that is still powerful and feature rich. For example when a user signs in I use the following user_login service;</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>user_login.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">UserLogin</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">auth</span><span class="p">)</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;pre&gt;&lt;code&gt;@auth = auth</span>
+</span><span class='line'><span class="sr">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;</span><span class="sr">/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  end&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="nf">login</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;pre&gt;&lt;code&gt;return false unless @auth</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">user = User.from_github_omniauth(@auth)</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">if user.save</span>
+</span><span class='line'><span class="sr">  UpdateUserStarredRepos.perform_async(user.id)</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">  user</span>
+</span><span class='line'><span class="sr">else</span>
+</span><span class='line'><span class="sr">  false</span>
+</span><span class='line'><span class="sr">end</span>
+</span><span class='line'><span class="sr">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;</span><span class="sr">/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  end</span>
+</span><span class='line'><span class="sr">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>which then executes</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>update_user_starred_repos.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">UpdateUserStarredRepos</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="ss">Sidekiq</span><span class="p">:</span><span class="ss">:Worker</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  def perform(id)&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</span><span class='line'><span class="n">starred_repos</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">github_starred_repos</span>
+</span><span class='line'><span class="no">Star</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">stargazer_login</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">login</span><span class="p">)</span><span class="o">.</span><span class="n">delete_all</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">starred_repos</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">raw_repo</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">repo</span> <span class="o">=</span> <span class="no">Repo</span><span class="o">.</span><span class="n">from_github</span><span class="p">(</span><span class="n">raw_repo</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">repo</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>  <span class="no">Star</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">admired_id</span><span class="p">:</span> <span class="n">repo</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">stargazer_login</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">login</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="o">&lt;</span><span class="sr">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>And boom, an asynchronous job is created.</p>
+
+<p>Also since I am bootstrapping this, I aimed to fit the entire application, including background jobs, into a single Heroku dyno. In my case with unicorn and sidekiq, I achieved this by starting sidekiq once with the following config file for unicorn;</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>unicorn.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">worker_processes</span> <span class="mi">2</span>
+</span><span class='line'><span class="n">timeout</span> <span class="mi">30</span>
+</span><span class='line'><span class="n">preload_app</span> <span class="kp">true</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;@sidekiq_pid = nil&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span><span class="n">before_fork</span> <span class="k">do</span> <span class="o">|</span><span class="n">server</span><span class="p">,</span> <span class="n">worker</span><span class="o">|</span>
+</span><span class='line'>  <span class="vi">@sidekiq_pid</span> <span class="o">||=</span> <span class="n">spawn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">bundle</span> <span class="nb">exec</span> <span class="n">sidekiq</span> <span class="o">-</span><span class="n">C</span> <span class="o">.</span><span class="n">/config</span><span class="o">/</span><span class="n">sidekiq</span><span class="o">.</span><span class="n">yml</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;)</span>
+</span><span class='line'><span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;after_fork do |server, worker|</span>
+</span><span class='line'><span class="sr">  ActiveRecord::Base.establish_connection</span>
+</span><span class='line'><span class="sr">  Sidekiq.configure_server do |config|&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">config</span><span class="o">.</span><span class="n">redis</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="ss">url</span><span class="p">:</span> <span class="no">AppSettings</span><span class="o">.</span><span class="n">data_store</span><span class="o">.</span><span class="n">redis</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">namespace</span><span class="p">:</span> <span class="s1">&#39;sidekiq&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">size</span><span class="p">:</span> <span class="mi">7</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="sr">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>So far, this unicorn setup has been humming along.</p>
+
+<p>I use caching liberally throughout the app, both in the form of view fragment caching, and good old (and awesome) <a href="http://api.rubyonrails.org/classes/ActiveSupport/Cache/Store.html#method-i-fetch">Rails.cache.fetch</a>. For this I use memcache with the dalli gem. This is the first project where I made good use of Rails.cache.fetch, and I am a huge fan. An example from the codebase below (Ignore the Feature Envy for now, it is a candidate for refactoring);
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>tag.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">Tag</span>
+</span><span class='line'>  <span class="c1"># &amp;hellip;.&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">public_tags</span><span class="p">(</span><span class="n">options</span> <span class="o">=</span> <span class="p">{})</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;pre&gt;&lt;code&gt;tags = if options[:cache] == false</span>
+</span><span class='line'><span class="sr">  Repo.tag_counts_on(:public_tags)</span>
+</span><span class='line'><span class="sr">else</span>
+</span><span class='line'><span class="sr">  Rails.cache.fetch([&#39;Tag&#39;, &#39;public_tags&#39;], expires_in: 10.minutes) { Repo.tag_counts_on(:public_tags) }</span>
+</span><span class='line'><span class="sr">end</span>
+</span><span class='line'><span class="sr">options[:tag_class] ? tags : tags.map { |t| t.name }</span>
+</span><span class='line'><span class="sr">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;</span><span class="sr">/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>And something just as awesome, <a href="http://37signals.com/svn/posts/3113-how-key-based-cache-expiration-works">key-based fragment caching</a>!;
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span><em>widget_profile_info.html.haml </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'>&amp;ndash; cache [&amp;lsquo;v1&amp;rsquo;, &amp;lsquo;users/&lt;/em&gt;widget_profile_info&amp;rsquo;, user] do
+</span><span class='line'>  <span class="nt">%p</span>&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;Here is some cool stuff on this user that is cached until the user is updated!
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;  = user.name
+</span><span class='line'>  <span class="p">=</span> <span class="n">image_tag</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">gravatar_url</span><span class="p">(</span><span class="ss">:s</span> <span class="o">=&gt;</span> <span class="mi">300</span><span class="p">),</span> <span class="ss">:alt</span> <span class="o">=&gt;</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Using these techniques has kept load time lower, but I still have a ways to go to optimize performance.</p>
+
+<p>For testing I use rspec, machinist (may switch back to FactoryGirl), and <a href="https://github.com/vcr/vcr">vcr</a> for stubbing web requests. If you use external APIs or web resources at all I would definitely recommend taking a look at <a href="https://github.com/vcr/vcr">vcr</a>, it makes mocking external requests a breeze.</p>
+
+<p>Finally for search I am using <a href="http://www.elasticsearch.org/">Elastic Search</a> with the <a href="https://github.com/karmi/tire">tire gem</a>. My initial approach was to load up into Elastic Search the IDs of each repo, and each repo&rsquo;s updated date, created date, and tags. I would then do a search against Elastic Search on those items and be returned IDs that I would use to pull the actual objects from the database and present to the user with the additional information that having the object provides. Then I happened upon a better idea; Why don&rsquo;t I put everything I&rsquo;m interested in into Elastic Search (and keep it updated) so I don&rsquo;t have to go back to my database to get that information? Now, I place the ID, repo name and owner name, description, star count, fork count, created date, updated date, and tags into Elastic Search. When a user does a search, all of those items are returned from Elastic Search, which is everything I need to display to the user. No need to bug the database for additional information! Unless the search contains personal tags from a logged in user (since I don&rsquo;t store private tag information in Elastic Search), which is a very small percentage of searches, the database is not hit at all! This was a huge boost to performance and memory usage.</p>
+
+<p>Also, using Elastic Search&rsquo;s filter and boolean features, finding similar repos based on the tags and descriptions is a snap.</p>
+
+<p>During development, <a href="http://pryrepl.org/">Pry</a> was a big asset. If you have never heard of Pry, I&rsquo;d recommend checking it out as it is a powerful alternative to the standard IRB shell for Ruby.</p>
+
+<h2>Launch</h2>
+
+<p>After I had the initial feature set completed and launched, it was time to get it in the hands of actual users to see if this solves the problem I set out to address and how to move forward. I was excited to get people using the app that I spent several weeks building in the hopes that it&rsquo;d be useful. I tweeted a bit, posted a discussion on LinkedIn, and made a small post on Reddit. In the first hour, I got a few dozen users. Awesome! People were using it! I was being asked questions! People liked it! The past few weeks weren&rsquo;t a complete waste of time!</p>
+
+<p>Then another hour or two passed, and several hundred people were using it. I was blown away. I was getting real traffic! I&rsquo;m not the only person who had this problem and thought my approach was useful! This was huge for me, my project actually had legs!</p>
+
+<p>Then thousands of people were using it. Now I was getting nervous; I felt like I wasn&rsquo;t ready for this kind of attention yet. My plan was to get some people using it, see what their thoughts and input were, and improve accordingly. Once I was able to address the input from other devs and launch a &ldquo;v1.2&rdquo;, I&rsquo;d then throw everything I had at getting it in the hands of devs. Clearly that plan went up in smoke and they were coming <em>now</em>.</p>
+
+<p>There were more conversations springing up and I knew it was important to get involved. I wanted to explain what I was trying to achieve, address the critics, and solicit input, and now was the best time, possibly the only time, to do this. I started engaging as many people and points as possible. At the same time, a bottleneck or two that I missed became apparent as I was dealing with hundreds of requests per minute and adding tens of thousands of repos. User experience was paramount. If the site started to respond poorly, crash, throw errors, or do anything other than perform with flying colors, I&rsquo;d be stifling possibly my largest opportunity to get real traction. While I was engaging as many conversations as humanly possible, I was also trying to elegantly and quickly address any issues that arose. It was a frantic day to say the least.</p>
+
+<h4>On <a href="http://gitrep.com">GitRep</a>&rsquo;s first full day live, 1,493 user accounts, 72,503 repos, and 409 unique tags were created.</h4>
+
+<p>I honestly could not have hoped for a better first day!</p>
+
+<h2>Post-Launch</h2>
+
+<p>Now that it is finally out the door, I am going to continue to watch how people use the site (using analytics such as Google Analytics and Mixpanel) and listen to direct feedback from UserVoice. Between the two I should get a good idea of where people are finding value and how to iterate and improve accordingly.</p>
+
+<p>So far next steps include adding badges to help incentivize the user base and adding a blog to cover updates and posts of interest. I also want to invest in getting the word out. The more people using it, the more opportunity to make <a href="http://GitRep.com">GitRep</a> useful!</p>
+
+<p>Thanks for taking the time to read through all this! It turned out a little longer than I had expected. As always, I&rsquo;m eager for any input or hearing from anyone wanting to get involved. I&rsquo;m always available at adrian.r.artiles at gmail dot com!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Standing on the Shoulders of Giants]]></title>
+    <link href="http://AdrianArtiles.com/standing-on-the-shoulders-of-giants"/>
+    <updated>2012-11-18T22:00:00-08:00</updated>
+    <id>http://AdrianArtiles.com/standing-on-the-shoulders-of-giants</id>
+    <content type="html"><![CDATA[<p>Despite having so much information accessible, we often fail to take full advantage of available resources and benefit from the work of others. When it comes to trying to grow as a developer, this is an excellent way to stunt your growth.</p>
+
+<p>Since it is not easy to sift through and distill the knowledge of a community, I wanted to share some of the work I&rsquo;ve already done in this regard with software development.</p>
+
+<!--more-->
+
+
+<p>Each time I&rsquo;ve tackled something (eating healthier, being more organized, exercising smarter), I&rsquo;ve always known that is wildly unlikely that I&rsquo;m the only person to do so and it would be wise to consider how others have approached what I am now approaching myself. I believe this is especially true when it comes to effectively becoming a skilled developer.</p>
+
+<p>For example, when I chose to learn Ruby I could have easily just googled &ldquo;Ruby tutorial&rdquo; and worked on the first tutorial I found. Instead I spent a little time comparing community opinions and recommendations of various tutorials, deciding that they may know which resources are best better than a general search engine. After some initial research I decided that spending some time at <a href="http://zfer.us/3BaTp">Code School</a> was the best way to start. They have some great courses on Ruby, along with a course that was my first taste of Ruby on Rails called &ldquo;Rails for Zombies.&rdquo; While I haven&rsquo;t taken all the courses that <a href="http://zfer.us/3BaTp">Code School</a> has to offer, every one I have taken has been informative and of high quality so I have no problem recommending the site as a whole.</p>
+
+<p>Next, when I embarked on learning Ruby on Rails (after getting my feet wet with Rails for Zombies from Code School and doing similar &ldquo;best-ways-to-learn&rdquo; research as I did with Ruby), the starting tutorial of choice was the <a href="http://ruby.railstutorial.org/">Ruby on Rails Tutorial by Michael Hartl</a>. It takes you from having a basic understanding of development, all the way through to having a fully functioning Ruby on Rails app, complete with introductions to test-driven-development, platform-as-a-service Heroku, version control with git, and other such best practices.</p>
+
+<p>Hartl&rsquo;s tutorial covers you end-to-end on all the introductory parts of Ruby on Rails, and it took me a few weeks of various nights and weekends to complete (including the bonus exercises at the end of each chapter). While going through the tutorial it is important to remember that the goal is to understand Ruby on Rails, not just complete the tutorial. If there is a part you don&rsquo;t understand, the worst thing you can do to yourself is to just go through the motions so you can say you &ldquo;completed it&rdquo; without actually learning anything. Each time you encounter something that isn&rsquo;t quite clicking or you don&rsquo;t understand, dig into it. Google around, mine <a href="http://stackoverflow.com">StackOverflow</a>, etc. until you are confident you get what is going on and why. In practicing this I would often find myself off on a tangent spending hours diving into new concepts, sometimes even on things that weren&rsquo;t a part of the tutorial. This meant it took me longer to actually get through the tutorial, but by the end of it I was confident I didn&rsquo;t misplace my effort and I had a good introductory handle on Ruby on Rails.</p>
+
+<p>It&rsquo;s important to remember that while reading code, reading material, and going through exercises are a great way to learn, you will only become proficient by actually following through and building apps, and for that I don&rsquo;t believe there is a substitute.</p>
+
+<p>To then improve my skills with Ruby on Rails, I focused on the concept of <a href="http://ofps.oreilly.com/titles/9780596518387/perpetual_learning.html#breakable_toys">Breakable Toys</a> as discussed in the book <a href="http://ofps.oreilly.com/titles/9780596518387/">Apprenticeship Patterns</a> by Dave Hoover (a great book I recommend on the journey of starting as an apprentice and working to eventually become a master software developer). In short, I would build something that I thought would be interesting or useful, with each app I built more challenging than the last. Personally, I believe a good way to think about it is to &ldquo;bite off more than you can chew, and learn how to chew it.&rdquo; When you set out to build your Breakable Toy, if you already know how to build it, it&rsquo;s too easy and therefor not a challenge, and you won&rsquo;t grow. When you want to build muscle you don&rsquo;t go to the gym and lift the same amount you did last time, you already did that. You need to push yourself, set the bar higher, and figure out how to meet your new, higher goal. To help find inspiration in what to build next I would often wander around and look at other people&rsquo;s code, projects, and problems. Sometimes I would add on features that I liked elsewhere to up the difficultly a bit. Two great resources that have helped me with this are <a href="http://github.com">Github</a> for finding and reading other people&rsquo;s code, and <a href="http://stackoverflow.com">StackOverflow</a> for questions and answers.</p>
+
+<p>While I was making progress with Ruby and Ruby on Rails, I knew it was important to stay in touch with the community at large and stay informed of new developments and best practices. For that I curated a list of sites and newsletters to follow, which are below in no particular order;</p>
+
+<ul>
+<li><a href="http://rubyweekly.com/">ruby weekly</a></li>
+<li><a href="http://robots.thoughtbot.com/">thoughtbot&rsquo;s blog</a></li>
+<li><a href="http://blog.hashrocket.com/">hashrockets&rsquo;s blog</a></li>
+<li><a href="http://37signals.com/svn">37signals' blog</a></li>
+<li><a href="http://rails-bestpractices.com/">rails best practices</a></li>
+<li><a href="http://ruby5.envylabs.com/">ruby 5</a></li>
+<li><a href="http://www.rubyflow.com/">ruby flow</a></li>
+</ul>
+
+
+<p>I also work to adhere to and understand the reasoning behind the styles outlined in the <a href="https://github.com/styleguide">github style guide</a> and the <a href="https://github.com/thoughtbot/guides">thoughtbot style guide</a>. It is important to have a consistent and modern style to your application code as it keeps your code easier to work with, and these guides definitely point you in the right direction.</p>
+
+<p>Finally when it came to my personal development environment, I began looking through how other people work and various dotfile repos. For example I spent a lot of time looking into what were the popular editors, plugins, shells, tools, etc., and why. I recommend taking a look at <a href="http://dotfiles.github.com/">dotfiles.github.com</a> to get a gist of some of the more popular approaches. Personally I use a fork of <a href="https://github.com/skwp/dotfiles">YADR</a>, with some slight tweaks (including very recently inclusion of <a href="http://todotxt.com/">todotxt</a> for example).</p>
+
+<p>Soon I will update this with a list of books as well, but in the meantime I hope these resources help you as they&rsquo;ve helped me!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Instagram jQuery Plugin Fix]]></title>
+    <link href="http://AdrianArtiles.com/instagram-jquery-plugin-fix"/>
+    <updated>2012-09-15T11:58:00-07:00</updated>
+    <id>http://AdrianArtiles.com/instagram-jquery-plugin-fix</id>
+    <content type="html"><![CDATA[<p>When I decided I wanted to incorporate an Instagram &ldquo;widget&rdquo; of some sort on my site, I decided on the <a href="http://potomak.github.com/jquery-instagram/">jquery.instagram.js plugin</a> since it looked easy to use and flexible.</p>
+
+<p>However when I finally got it working on the site, I noticed there were some issues with the stream.</p>
+
+<!-- more -->
+
+
+<p>I had taken all the right steps. I set up the plugin and wanted it to display 4 images at the foot of the site. I set the required variables, including <code>show: 4</code>, as necessary for the plugin, along with setting up a button that when pressed will show you the next 4 images in the stream.</p>
+
+<p>After getting the javascript to work I took a look at it live on the site, and after some additional CSS work to get it to look how I liked, every including the &ldquo;show more&rdquo; button seemed to be as it should. Happy with how things were working, I went back and made the necessary changes for the plugin to show images from my stream, which was a simple change of my getting and setting the <code>userId</code> and <code>accessToken</code> variables.</p>
+
+<p>Going back to seeing it live, everything looked good and I saw the latest 4 images from my stream as expected. Awesome! I then went and pressed the &ldquo;more&rdquo; button expecting to see the next 4 images, but was instead greeted with a &ldquo;no more results&rdquo; error.</p>
+
+<p>&ldquo;Well, that&rsquo;s not right. I definitely have more than 4 images in my stream.&rdquo; I double checked everything and decided that there was an issue somewhere.</p>
+
+<h3>to the source!</h3>
+
+<p>I went to the <code>jquery.instagram.js</code> file and started adding some <code>console.log</code>s throughout the file to see if I could spot anything that might shed some light.</p>
+
+<p>While stepping through the code it looked like the &ldquo;more&rdquo; type button does an API request to a predefined pagination url, which is set on the initial API request to instagram. Pretty straight forward. So a request is made to Instagram, Instagram returns X images along with a url to receive the next X images, and this button was making a request to that pagination url and showing those images. After looking through that portion of the code everything seemed to be in order and not the cause of the issue&hellip;</p>
+
+<p>I then took a look at the response to the API request the plugin was making to instagram. The response contained almost a dozen images, even though I only wanted to show 4. So I took a look at the code that actually shows images;</p>
+
+<p>```javascript
+if(limit > 0) {
+  for(var i = 0; i &lt; limit; i++) {</p>
+
+<pre><code>that.append(createPhotoElement(res.data[i]));
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>So it just takes the first 4 (or however many you set as to be shown) images from the response and shows them. Okay, fair enough.</p>
+
+<p>But now we&rsquo;re getting close to the issue.</p>
+
+<p>So Instagram&rsquo;s response to the API call includes the images along with the pagination URL for the next batch for that query, assuming there are more results for the initial query than images the response is currently returning. Now in my stream I currently have 8 or so images, and on that initial API call to Instagram, Instagram was returning all 8 images, so there was no pagination URL returned. Now the plugin was doing the request (and in my case returning all 8 of my images), and just showing the first 4 on the page. And when you click the &ldquo;more&rdquo; button to paginate, it fails, because Instagram has nothing more to give you (even though the plugin only showed 4)!</p>
+
+<p>Plugin is doing the request, is given images 1 &ndash; 10 (default behavior), shows the first 4, then asks for images 11-20, and shows the first 4 from <em>that</em> request. In the end, we&rsquo;re only shown images 1-4, and 11-14, completely skipping 12 images.</p>
+
+<p>Okay, now that I know the problem, what&rsquo;s the fix? Do I rewrite the button to iterate through the results returned instead of relying on the pagination URL? That probably won&rsquo;t be a minor rewrite.</p>
+
+<p>After looking through Instagram&rsquo;s API documentation I believe I found the easiest solution. When doing an API request to Instagram, you can specify the amount of images you want back, with the pagination URL feature continuing to work as expected. So if you have 12 images in your stream, and you do a request for the first 4, along with being returned the images, you&rsquo;ll be given the pagination URL for images 5 &ndash; 8.</p>
+
+<p>Perfect, incorporating this allows me to fix the issue with modifying as little of the existing code as possible.</p>
+
+<p>I made the change locally, adding the <code>show</code> parameter defined when using the <code>instagram</code> function as a <code>count</code> parameter in the API request sent to Instagram, so Instagram will only return what I want to show, along with a pagination URL for the next batch if I choose to show them. Saved the new version, tested it on the site, and poof, problem resolved!</p>
+
+<h3>Now to Contribute to the Open Source Project</h3>
+
+<p>Since this is an issue that is affecting everyone using this plugin, and I already did the leg work on discovering and resolving it, it only makes sense to contribute to the project.</p>
+
+<p>I went ahead and forked the repo, created the branch, and did a pull request for my succinct diff, and it was approved and merged into master the next day. Hooray for open source!</p>
+
+<p>If you ever need a javascript plugin for Instagram, I recommend taking a look at <a href="https://github.com/potomak/jquery-instagram">jquery.instagram.js</a>. It&rsquo;s popular for a reason!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Why I Chose Jekyll/octopress Over Wordpress]]></title>
+    <link href="http://AdrianArtiles.com/why-i-chose-jekyll-slash-octopress-over-wordpress"/>
+    <updated>2012-09-09T21:24:00-07:00</updated>
+    <id>http://AdrianArtiles.com/why-i-chose-jekyll-slash-octopress-over-wordpress</id>
+    <content type="html"><![CDATA[<p>When I chose to revamp AdrianArtiles.com from a static site to something that I can share work and writings on, I quickly set to work whiteboarding everything I wanted from the new site. This narrowed my choice to two options for the framework; wordpress, and octopress/jekyll.</p>
+
+<!--more-->
+
+
+<p>Now let me start by saying I love wordpress. I&rsquo;ve used it for several years and have relied on it for several projects for both myself and for clients. Initially I thought I would be using wordpress, but after further consideration it started to seem like it wasn&rsquo;t the right fit.</p>
+
+<p>My first requirement that it had to be easy to use. When I say &ldquo;easy to use&rdquo;, I mean so in every sense; installing it, maintaining it, updating it, writing entries for it, hacking it up and customizing it to whatever I need, and so on. I have enough things that require effort and attention in my life, AdrianArtiles.com doesn&rsquo;t need to be one of them.</p>
+
+<p>Now wordpress is not difficult to use. I&rsquo;ve installed it countless times on vps&rsquo;s, amazon instances, shared hosting, heroku, etc., etc.. Authoring a new post only takes a few minutes. Assuming you know PHP, altering a theme, plugin, or anything really only takes a minimal amount of fiddling.</p>
+
+<p>But for my needs it seemed a little heavy. First of all, I didn&rsquo;t want to deal with a database. I wanted my new site to be as simple and light weight as possible, and I felt there was something out there lighter than wordpress that can do what I wanted.</p>
+
+<p>Now if I just wanted a care-free, &ldquo;no frills&rdquo; blogging solution, I could do that anywhere. I could easily turn to tumblr and be done with it, but I also wanted to be able to hack it up and customize it however I wanted, control the experience as much or as little as I wanted to, or maybe repurpose a part of the site for something else.</p>
+
+<p>So the solution would have to be light-weight and flexible. Bonus points for using a technology that I like working with that helps me achieve this. Something in ruby perhaps?</p>
+
+<p>With these requirements I set out to see what best matched the bill.</p>
+
+<h3>enter octopress</h3>
+
+<p>I heard about <a href="https://github.com/mojombo/jekyll">Jekyll</a> before, but at the time I didn&rsquo;t give it much thought. &ldquo;Why would I want to work with something so bare-bones when there are so many other full featured and customizable options&rdquo; I asked outloudly to my computer screen. I laughed to myself and installed wordpress for the umpteenth time.</p>
+
+<p>Fast forward to today and my quest for my new framework. I came across <a href="http://octopress.org/">Octopress</a>, which is built on top of jekyll. It was polished, feature-filled, easy to use (if you&rsquo;re a developer of any sort), and lightweight.</p>
+
+<p>What I loved about Octopress/Jekyll was the overhead. It was just files. No database, and I get everything I want. I just write the posts that I want locally with any text editor (currently vim, with the very occasional sublime text), <code>rake generate</code>, and I have the files that are my site! Now I can take those files and host them anywhere and I have my site. So I can put it on an amazon instance, heroku, appfog, a laptop connected to the internet in a basement, whatever, anything that can host a few files. No database to configure, maintain, or worry myself with.</p>
+
+<p>Since it&rsquo;s written in ruby, if I wanted to get in there and change something up I easily could. Most of the configuration I wanted could be achieved with plugins, themes, and old fashioned css and javascript. Now I could SEO, tweak, and design to my heart&rsquo;s content, which so far as turned into this theme (which I made open sourced and available via <a href="https://github.com/sevenadrian/foxslide">github</a>).</p>
+
+<p>Besides being able to use whatever text editor I like, I&rsquo;d be writing in <a href="http://daringfireball.net/projects/markdown/">markdown</a>. Markdown is an easy to use &ldquo;shorthand&rdquo; for writing for websites. It makes creating links, headers, quotes, lists, those kind of things, very easy to do.</p>
+
+<p>Another advantage is <em>version control</em>. If you are a software developer and you don&rsquo;t use version control, you are a danger to yourself and to others around you. For those who use version control, the advantages in using it for a blog should be obvious. For those not familiar with version control, take a look at a very popular distributed version control called <a href="http://git-scm.com/">git</a>. Basically it allows you to save a &ldquo;copy&rdquo; of your site at every step of the way, and giving you the ability to see changes over time and revert to a specific point at any time. Use a hosted git solution like <a href="http://github.com">github</a> and never have to worry about losing any part of your website again.</p>
+
+<p>So far I&rsquo;m happy with the decision I&rsquo;ve made. I got everything I was looking for in the package I want. Now let&rsquo;s hope I write often enough to take advantage of it.</p>
+]]></content>
+  </entry>
+  
+</feed>

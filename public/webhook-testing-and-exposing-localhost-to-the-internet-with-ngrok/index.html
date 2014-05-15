@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Local Webhook Testing and Exposing Localhost to the Internet With Ngrok - Adrian Artiles</title>
+  <meta name="author" content="Adrian Artiles">
+
+  
+  <meta name="description" content="Local Webhook Testing and Exposing Localhost to the Internet With Ngrok written December 30, 2013 in tech Recently I was working on incorporating &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://AdrianArtiles.com/webhook-testing-and-exposing-localhost-to-the-internet-with-ngrok">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Adrian Artiles" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-34692646-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+  <body>
+    <a href="/" class="home-icon">
+      <img src="/images/home.png"/>
+    </a>
+
+    <article role="article" class="full-single-article">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+        <h1>Local Webhook Testing and Exposing Localhost to the Internet With Ngrok</h1>
+        <div class="meta">
+          written 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-12-30T21:49:00-08:00" pubdate data-updated="true">December 30, 2013</time> in 
+          
+
+<span class="categories">
+  
+    <a class='category' href='/categories/tech/'>tech</a>
+  
+</span>
+
+
+        </div>
+        <p>Recently I was working on incorporating some <a href="http://Stripe.com">Stripe</a> webhooks, but quite naturally I wanted to test it and iterate locally. Having to write some code, commit, merge it to master, deploy to production, and then finally test, is just way too long of a feedback loop.</p>
+
+<p>I wanted to be able to expose my localhost to the internet so I can test the webhooks locally, and I found the perfect tool in <a href="https://ngrok.com">ngrok</a>!</p>
+
+<!-- more -->
+
+
+<p>Ngrok is a simple application written in Go. You run it locally and it creates a tunnel to <a href="https://some-random-subdomain.ngrok.com.">https://some-random-subdomain.ngrok.com.</a> The application is a single binary with absolutely no run-time dependencies. It is hilariously easy to set up. In fact, we&rsquo;re going to set it up for you right now (these are mac instructions);</p>
+
+<pre><code># Download ngrok
+$ curl 'https://dl.ngrok.com/darwin_amd64/ngrok.zip' &gt; ~/Downloads/ngrok.zip
+
+# Unzip it
+$ unzip ~/Downloads/ngrok.zip
+
+# Create a tunnel from localhost:3000 to the interwebs
+$ ./ngrok 3000
+</code></pre>
+
+<p>That took 6, maybe 7 seconds to do, and our locally running server is now being served up to the web and is publicly accessible. Amazing.</p>
+
+<p>While running it, you&rsquo;ll see a status screen like the following.</p>
+
+<pre><code>ngrok                                                           (Ctrl+C to quit)
+
+Tunnel Status                 online
+Version                       1.6/1.5
+Forwarding                    http://kl23j.ngrok.com -&gt; 127.0.0.1:3000
+Forwarding                    https://kl23j.ngrok.com -&gt; 127.0.0.1:3000
+Web Interface                 127.0.0.1:4040
+# Conn                        0
+Avg Conn Time                 0.00ms
+</code></pre>
+
+<p>Now if your sole goal was to get your local server exposed to the web so it can be hit with webhooks from external services, just specify your ngrok url as the endpoint with your webhooking service and you&rsquo;re done. Also, on this screen you&rsquo;ll see a live list of incoming HTTP requests. Pretty snazzy.</p>
+
+<p>The snazziness does not end there however. Something that you may notice in this status screen is that you get a web interface at 127.0.0.1:4040. What&rsquo;s there you may ask? Well hopefully at this point you&rsquo;re running this locally so you can check it out first-hand, but in short it gives you a wealth of information including all requests, response time, the actual responses provided, and <em>the ability to replay requests</em>. Where do the surprises end?</p>
+
+<p>Oh, but what if you don&rsquo;t want a randomly assigned subdomain each time? Want to be able to specify a specific url/subdomain so your external services can always go to the same spot instead of always changing it to whatever randomly assigned subdomain ngrok gives you? Do you have another 15 to 20 seconds to invest in this fantastic little tool? Read on friend;</p>
+
+<p>If you register with ngrok.com <a href="https://ngrok.com/signup">here</a>, which is <em>completely free</em>, you get some additional functionality such as being able to specify specific subdomains (like <code>ngrok -subdomain=adrian-likes-waffles 3000</code> will create a tunnel from <a href="https://adrian-likes-waffles.ngrok.com,">https://adrian-likes-waffles.ngrok.com,</a> assuming it is currently available.), TCP tunneling, password protection, etc.. If you do decide you are willing to pay, there are even further features as well.</p>
+
+<p>Pretty great tool/service in such a tight package. Within a few minutes of playing with it I moved the binary to <code>/usr/local/bin/ngrok</code> so I always have access to it, making it a part of my regular tool belt. I hope you find it just as useful and it makes its way to your toolbelt as well.</p>
+
+      </div>
+    </div>
+  </div>
+</article>
+
+<hr class="divider-short"/>
+
+<div class="archive-link">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+        
+          <a class="pull-left" href="/write-like-you-mean-it" title="Previous Post: Write Like You Mean It">&laquo; Previous: Write Like You Mean It</a>
+        
+
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+    <footer id="footer" class="her-row">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-1">
+  <a href="/"><h4>Home</h4></a>
+</div>
+
+<div class="col-md-2">
+  <div class="social-icon-list">
+    <a href="https://twitter.com/AdrianArtiles"><img src="/images/glyphicons_social_31_twitter.png"/></a>
+    <a href="https://github.com/sevenadrian"><img src="/images/glyphicons_social_21_github.png"/></a>
+    <a href="mailto:adrian.r.artiles@gmail.com"><img src="/images/glyphicons_social_39_e-mail.png"/></a>
+  </div>
+</div>
+
+<div class="pull-right">
+  <h4>Powered by <a href="http://octopress.org/">Octopress</a>. Designed by <a href="http://AdrianArtiles.com">Adrian Artiles</a>.</h4>
+</div>
+
+
+    </div>
+  </div>
+</footer>
+
+  </body>
+</html>

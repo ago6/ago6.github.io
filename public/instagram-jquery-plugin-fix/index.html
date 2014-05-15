@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Instagram jQuery Plugin Fix - Adrian Artiles</title>
+  <meta name="author" content="Adrian Artiles">
+
+  
+  <meta name="description" content="Instagram jQuery Plugin Fix written September 15, 2012 in tech When I decided I wanted to incorporate an Instagram &ldquo;widget&rdquo; of some sort &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://AdrianArtiles.com/instagram-jquery-plugin-fix">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Adrian Artiles" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-34692646-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+  <body>
+    <a href="/" class="home-icon">
+      <img src="/images/home.png"/>
+    </a>
+
+    <article role="article" class="full-single-article">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+        <h1>Instagram jQuery Plugin Fix</h1>
+        <div class="meta">
+          written 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2012-09-15T11:58:00-07:00" pubdate data-updated="true">September 15, 2012</time> in 
+          
+
+<span class="categories">
+  
+    <a class='category' href='/categories/tech/'>tech</a>
+  
+</span>
+
+
+        </div>
+        <p>When I decided I wanted to incorporate an Instagram &ldquo;widget&rdquo; of some sort on my site, I decided on the <a href="http://potomak.github.com/jquery-instagram/">jquery.instagram.js plugin</a> since it looked easy to use and flexible.</p>
+
+<p>However when I finally got it working on the site, I noticed there were some issues with the stream.</p>
+
+<!-- more -->
+
+
+<p>I had taken all the right steps. I set up the plugin and wanted it to display 4 images at the foot of the site. I set the required variables, including <code>show: 4</code>, as necessary for the plugin, along with setting up a button that when pressed will show you the next 4 images in the stream.</p>
+
+<p>After getting the javascript to work I took a look at it live on the site, and after some additional CSS work to get it to look how I liked, every including the &ldquo;show more&rdquo; button seemed to be as it should. Happy with how things were working, I went back and made the necessary changes for the plugin to show images from my stream, which was a simple change of my getting and setting the <code>userId</code> and <code>accessToken</code> variables.</p>
+
+<p>Going back to seeing it live, everything looked good and I saw the latest 4 images from my stream as expected. Awesome! I then went and pressed the &ldquo;more&rdquo; button expecting to see the next 4 images, but was instead greeted with a &ldquo;no more results&rdquo; error.</p>
+
+<p>&ldquo;Well, that&rsquo;s not right. I definitely have more than 4 images in my stream.&rdquo; I double checked everything and decided that there was an issue somewhere.</p>
+
+<h3>to the source!</h3>
+
+<p>I went to the <code>jquery.instagram.js</code> file and started adding some <code>console.log</code>s throughout the file to see if I could spot anything that might shed some light.</p>
+
+<p>While stepping through the code it looked like the &ldquo;more&rdquo; type button does an API request to a predefined pagination url, which is set on the initial API request to instagram. Pretty straight forward. So a request is made to Instagram, Instagram returns X images along with a url to receive the next X images, and this button was making a request to that pagination url and showing those images. After looking through that portion of the code everything seemed to be in order and not the cause of the issue&hellip;</p>
+
+<p>I then took a look at the response to the API request the plugin was making to instagram. The response contained almost a dozen images, even though I only wanted to show 4. So I took a look at the code that actually shows images;</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">if</span><span class="p">(</span><span class="nx">limit</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">limit</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">that</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">createPhotoElement</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">]));</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So it just takes the first 4 (or however many you set as to be shown) images from the response and shows them. Okay, fair enough.</p>
+
+<p>But now we&rsquo;re getting close to the issue.</p>
+
+<p>So Instagram&rsquo;s response to the API call includes the images along with the pagination URL for the next batch for that query, assuming there are more results for the initial query than images the response is currently returning. Now in my stream I currently have 8 or so images, and on that initial API call to Instagram, Instagram was returning all 8 images, so there was no pagination URL returned. Now the plugin was doing the request (and in my case returning all 8 of my images), and just showing the first 4 on the page. And when you click the &ldquo;more&rdquo; button to paginate, it fails, because Instagram has nothing more to give you (even though the plugin only showed 4)!</p>
+
+<p>Plugin is doing the request, is given images 1 &ndash; 10 (default behavior), shows the first 4, then asks for images 11-20, and shows the first 4 from <em>that</em> request. In the end, we&rsquo;re only shown images 1-4, and 11-14, completely skipping 12 images.</p>
+
+<p>Okay, now that I know the problem, what&rsquo;s the fix? Do I rewrite the button to iterate through the results returned instead of relying on the pagination URL? That probably won&rsquo;t be a minor rewrite.</p>
+
+<p>After looking through Instagram&rsquo;s API documentation I believe I found the easiest solution. When doing an API request to Instagram, you can specify the amount of images you want back, with the pagination URL feature continuing to work as expected. So if you have 12 images in your stream, and you do a request for the first 4, along with being returned the images, you&rsquo;ll be given the pagination URL for images 5 &ndash; 8.</p>
+
+<p>Perfect, incorporating this allows me to fix the issue with modifying as little of the existing code as possible.</p>
+
+<p>I made the change locally, adding the <code>show</code> parameter defined when using the <code>instagram</code> function as a <code>count</code> parameter in the API request sent to Instagram, so Instagram will only return what I want to show, along with a pagination URL for the next batch if I choose to show them. Saved the new version, tested it on the site, and poof, problem resolved!</p>
+
+<h3>Now to Contribute to the Open Source Project</h3>
+
+<p>Since this is an issue that is affecting everyone using this plugin, and I already did the leg work on discovering and resolving it, it only makes sense to contribute to the project.</p>
+
+<p>I went ahead and forked the repo, created the branch, and did a pull request for my succinct diff, and it was approved and merged into master the next day. Hooray for open source!</p>
+
+<p>If you ever need a javascript plugin for Instagram, I recommend taking a look at <a href="https://github.com/potomak/jquery-instagram">jquery.instagram.js</a>. It&rsquo;s popular for a reason!</p>
+
+      </div>
+    </div>
+  </div>
+</article>
+
+<hr class="divider-short"/>
+
+<div class="archive-link">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+        
+          <a class="pull-left" href="/why-i-chose-jekyll-slash-octopress-over-wordpress" title="Previous Post: why i chose jekyll/octopress over wordpress">&laquo; Previous: why i chose jekyll/octopress over wordpress</a>
+        
+
+        
+          <a class="pull-right" href="/standing-on-the-shoulders-of-giants" title="Next Post: Standing on the Shoulders of Giants">Next: Standing on the Shoulders of Giants &raquo;</a>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+    <footer id="footer" class="her-row">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-1">
+  <a href="/"><h4>Home</h4></a>
+</div>
+
+<div class="col-md-2">
+  <div class="social-icon-list">
+    <a href="https://twitter.com/AdrianArtiles"><img src="/images/glyphicons_social_31_twitter.png"/></a>
+    <a href="https://github.com/sevenadrian"><img src="/images/glyphicons_social_21_github.png"/></a>
+    <a href="mailto:adrian.r.artiles@gmail.com"><img src="/images/glyphicons_social_39_e-mail.png"/></a>
+  </div>
+</div>
+
+<div class="pull-right">
+  <h4>Powered by <a href="http://octopress.org/">Octopress</a>. Designed by <a href="http://AdrianArtiles.com">Adrian Artiles</a>.</h4>
+</div>
+
+
+    </div>
+  </div>
+</footer>
+
+  </body>
+</html>

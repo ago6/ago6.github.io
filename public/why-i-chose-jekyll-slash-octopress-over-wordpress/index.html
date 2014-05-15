@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Why I Chose Jekyll/octopress Over Wordpress - Adrian Artiles</title>
+  <meta name="author" content="Adrian Artiles">
+
+  
+  <meta name="description" content="Why I Chose Jekyll/octopress Over Wordpress written September 9, 2012 in tech When I chose to revamp AdrianArtiles.com from a static site to &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://AdrianArtiles.com/why-i-chose-jekyll-slash-octopress-over-wordpress">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Adrian Artiles" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-34692646-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+  <body>
+    <a href="/" class="home-icon">
+      <img src="/images/home.png"/>
+    </a>
+
+    <article role="article" class="full-single-article">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+        <h1>Why I Chose Jekyll/octopress Over Wordpress</h1>
+        <div class="meta">
+          written 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2012-09-09T21:24:00-07:00" pubdate data-updated="true">September 9, 2012</time> in 
+          
+
+<span class="categories">
+  
+    <a class='category' href='/categories/tech/'>tech</a>
+  
+</span>
+
+
+        </div>
+        <p>When I chose to revamp AdrianArtiles.com from a static site to something that I can share work and writings on, I quickly set to work whiteboarding everything I wanted from the new site. This narrowed my choice to two options for the framework; wordpress, and octopress/jekyll.</p>
+
+<!--more-->
+
+
+<p>Now let me start by saying I love wordpress. I&rsquo;ve used it for several years and have relied on it for several projects for both myself and for clients. Initially I thought I would be using wordpress, but after further consideration it started to seem like it wasn&rsquo;t the right fit.</p>
+
+<p>My first requirement that it had to be easy to use. When I say &ldquo;easy to use&rdquo;, I mean so in every sense; installing it, maintaining it, updating it, writing entries for it, hacking it up and customizing it to whatever I need, and so on. I have enough things that require effort and attention in my life, AdrianArtiles.com doesn&rsquo;t need to be one of them.</p>
+
+<p>Now wordpress is not difficult to use. I&rsquo;ve installed it countless times on vps&rsquo;s, amazon instances, shared hosting, heroku, etc., etc.. Authoring a new post only takes a few minutes. Assuming you know PHP, altering a theme, plugin, or anything really only takes a minimal amount of fiddling.</p>
+
+<p>But for my needs it seemed a little heavy. First of all, I didn&rsquo;t want to deal with a database. I wanted my new site to be as simple and light weight as possible, and I felt there was something out there lighter than wordpress that can do what I wanted.</p>
+
+<p>Now if I just wanted a care-free, &ldquo;no frills&rdquo; blogging solution, I could do that anywhere. I could easily turn to tumblr and be done with it, but I also wanted to be able to hack it up and customize it however I wanted, control the experience as much or as little as I wanted to, or maybe repurpose a part of the site for something else.</p>
+
+<p>So the solution would have to be light-weight and flexible. Bonus points for using a technology that I like working with that helps me achieve this. Something in ruby perhaps?</p>
+
+<p>With these requirements I set out to see what best matched the bill.</p>
+
+<h3>enter octopress</h3>
+
+<p>I heard about <a href="https://github.com/mojombo/jekyll">Jekyll</a> before, but at the time I didn&rsquo;t give it much thought. &ldquo;Why would I want to work with something so bare-bones when there are so many other full featured and customizable options&rdquo; I asked outloudly to my computer screen. I laughed to myself and installed wordpress for the umpteenth time.</p>
+
+<p>Fast forward to today and my quest for my new framework. I came across <a href="http://octopress.org/">Octopress</a>, which is built on top of jekyll. It was polished, feature-filled, easy to use (if you&rsquo;re a developer of any sort), and lightweight.</p>
+
+<p>What I loved about Octopress/Jekyll was the overhead. It was just files. No database, and I get everything I want. I just write the posts that I want locally with any text editor (currently vim, with the very occasional sublime text), <code>rake generate</code>, and I have the files that are my site! Now I can take those files and host them anywhere and I have my site. So I can put it on an amazon instance, heroku, appfog, a laptop connected to the internet in a basement, whatever, anything that can host a few files. No database to configure, maintain, or worry myself with.</p>
+
+<p>Since it&rsquo;s written in ruby, if I wanted to get in there and change something up I easily could. Most of the configuration I wanted could be achieved with plugins, themes, and old fashioned css and javascript. Now I could SEO, tweak, and design to my heart&rsquo;s content, which so far as turned into this theme (which I made open sourced and available via <a href="https://github.com/sevenadrian/foxslide">github</a>).</p>
+
+<p>Besides being able to use whatever text editor I like, I&rsquo;d be writing in <a href="http://daringfireball.net/projects/markdown/">markdown</a>. Markdown is an easy to use &ldquo;shorthand&rdquo; for writing for websites. It makes creating links, headers, quotes, lists, those kind of things, very easy to do.</p>
+
+<p>Another advantage is <em>version control</em>. If you are a software developer and you don&rsquo;t use version control, you are a danger to yourself and to others around you. For those who use version control, the advantages in using it for a blog should be obvious. For those not familiar with version control, take a look at a very popular distributed version control called <a href="http://git-scm.com/">git</a>. Basically it allows you to save a &ldquo;copy&rdquo; of your site at every step of the way, and giving you the ability to see changes over time and revert to a specific point at any time. Use a hosted git solution like <a href="http://github.com">github</a> and never have to worry about losing any part of your website again.</p>
+
+<p>So far I&rsquo;m happy with the decision I&rsquo;ve made. I got everything I was looking for in the package I want. Now let&rsquo;s hope I write often enough to take advantage of it.</p>
+
+      </div>
+    </div>
+  </div>
+</article>
+
+<hr class="divider-short"/>
+
+<div class="archive-link">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+        
+
+        
+          <a class="pull-right" href="/instagram-jquery-plugin-fix" title="Next Post: Instagram jQuery Plugin Fix">Next: Instagram jQuery Plugin Fix &raquo;</a>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+    <footer id="footer" class="her-row">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-1">
+  <a href="/"><h4>Home</h4></a>
+</div>
+
+<div class="col-md-2">
+  <div class="social-icon-list">
+    <a href="https://twitter.com/AdrianArtiles"><img src="/images/glyphicons_social_31_twitter.png"/></a>
+    <a href="https://github.com/sevenadrian"><img src="/images/glyphicons_social_21_github.png"/></a>
+    <a href="mailto:adrian.r.artiles@gmail.com"><img src="/images/glyphicons_social_39_e-mail.png"/></a>
+  </div>
+</div>
+
+<div class="pull-right">
+  <h4>Powered by <a href="http://octopress.org/">Octopress</a>. Designed by <a href="http://AdrianArtiles.com">Adrian Artiles</a>.</h4>
+</div>
+
+
+    </div>
+  </div>
+</footer>
+
+  </body>
+</html>
