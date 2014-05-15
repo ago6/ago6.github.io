@@ -1,4 +1,0 @@
-User-agent: *
-Disallow: 
-
-Sitemap: http://AdrianArtiles.com/sitemap.xml 
