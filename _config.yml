@@ -1,7 +1,7 @@
 # Site settings
 title: My awesome WEBZsite
 email: agomez6@gmail.com
-description: "A Jekyll powered site created by Alejandro Gomez and with the help of others whom I happened to stumble upon by google searching."
+description: "A Jekyll powered site created by Alejandro Gomez and help of others whom I happened to stumble upon by google searching."
 baseurl: ""
 url: "http://ago6.github.com"
 
