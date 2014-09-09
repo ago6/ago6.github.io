@@ -1,4 +1,4 @@
-<div id="about" style="display: block; left: 50%;">
+<div id="about.html" style="display: block; left: 50%;">
 			<img src="images/me.png" id="me" alt="Andrew Reifman photo">
 		
 			<div class="facts">
