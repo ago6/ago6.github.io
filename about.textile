@@ -1,17 +1,61 @@
----
-layout: static
-title: about
----
-
-Welcome, and thanks for reading. If you want to contact me, check out the contact links on the sidebar.
-
-What is the <a href="http://alcoman.railfan.net/fear.html">Litany Against Fear</a>? It's from the <a href="http://en.wikipedia.org/wiki/Dune_(novel)">Dune novels by Frank Herbert</a>:
-
-p=. *I must not fear.
-Fear is the mind-killer.
-Fear is the little-death that brings total obliteration.
-I will face my fear.
-I will permit it to pass over me and through me.
-And when it has gone past I will turn the inner eye to see its path.
-Where the fear has gone there will be nothing.
-Only I will remain.*
+<div id="about" style="display: block; left: 50%;">
+			<img src="images/me.png" id="me" alt="Andrew Reifman photo">
+		
+			<div class="facts">
+				<h2>Hi, my name is Andrew Reifman</h2>
+				<p>I'm a graphic designer living in Washington, D.C. I like to make cool and creative designs, regardless of what medium I'm working in.</p>
+			</div>
+			<div class="facts bottom">
+				<h2>Facts about me</h2>
+				<ul>
+					<li>I am a dual citizen of the USA and Brazil (don't let the pale skin fool you).</li>
+					<li>Aside from design, my other job is shooting pool.</li>
+					<li>The amount of random movie knowledge I have would scare you.</li>
+					<li>To this day, I still buy music on CDs and have never bought an mp3.</li>
+					<li>I have been told that I have a sweet tooth for chocolate similar to a girl's.</li>
+					<li>My love for steak will never allow me to become a vegetarian.</li>
+				</ul>
+			</div>
+		
+			<div id="skills">
+				<h2>Skill Set</h2>
+				<ul>
+					<li>
+						<p class="bar photoshop">Photoshop</p>
+						<p class="percent">90%</p>
+					</li>
+					<li>
+						<p class="bar illustrator">Illustrator</p>
+						<p class="percent">80%</p>
+					</li>
+					<li>
+						<p class="bar html">HTML/CSS</p>
+						<p class="percent">85%</p>
+					</li>
+					<li>
+						<p class="bar javascript">Javascript (jQuery)</p>
+						<p class="percent">60%</p>
+					</li>
+					<li>
+						<p class="bar pool">Pool Shark</p>
+						<p class="percent">95%</p>
+					</li>
+				</ul>
+				<p class="measure">Level of skill (measured in awesome)</p>
+			</div>
+		
+			<div id="contact">
+				<h2>Become my BFF</h2>
+				<ul>
+					<li id="email"><a href="mailto:andrewreifman@gmail.com">Email</a></li>
+					<li id="twitter"><a href="http://twitter.com/andrewreifman" onclick="window.open(this.href);return false;">Twitter</a></li>
+					<li id="facebook" style="margin-top: 0px;"><a href="http://www.facebook.com/andrewreifman" onclick="window.open(this.href);return false;">Facebook</a></li>
+					<li id="wtf"><a href="http://jupiter.kamfjord-it.no/~wheelman/Saxguy/" onclick="window.open(this.href);return false;">??!!!?!?!?</a></li>
+				</ul>
+			</div>
+		
+			<div id="resume">
+				<a href="AndrewReifman_Resume.pdf"><h2>Download my CV</h2></a>
+				<a href="AndrewReifman_Resume.pdf"><img src="images/icon_cv.gif" style="-webkit-transform: rotate(0deg);"></a>
+			</div>
+		</div>
