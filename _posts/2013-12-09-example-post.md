@@ -2,7 +2,7 @@
 layout: post
 title: First Post Sample
 cover: cover.jpg
-date:   2014-06-28 13:30:00
+date:   
 categories: posts
 ---
 
