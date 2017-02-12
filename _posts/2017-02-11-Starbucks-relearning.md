@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Time to Recharge
-cover: sql_maestro.jpg
+cover:sql_maestro.jpg
 date:   2017-02-11 06:30:44
 categories: posts
 ---
