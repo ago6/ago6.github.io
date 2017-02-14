@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Time to Recharge
+title: Unexpected Day Trip
 cover: big_bear02-12-2017.jpg
 date:   2017-02-13 07:57:44
 categories: posts
