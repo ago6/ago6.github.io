@@ -1,5 +1,5 @@
 name: Flex
 markdown: kramdown
-pygments: true
+pygments: null
 highlighter: rouge
 google_analytics: "UA-92081409-1"
