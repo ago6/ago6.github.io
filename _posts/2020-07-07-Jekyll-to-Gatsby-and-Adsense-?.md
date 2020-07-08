@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Unexpected Day Trip
+title: Welcome Back
 cover: jekyllgatsbyadsesnseimage.jpg
 date:   2020-07-07 09:31:00
 categories: posts
